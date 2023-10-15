@@ -12,8 +12,6 @@ import SwiftUI
 struct LandscapeCalculatorView: View {
 
   @ObservedObject var viewModel: ViewModel
-  @State var currentOperation: Operation
-  @State var currentOperation2: Operation
 
   let buttons: [[CalcButton]]
 
@@ -30,7 +28,7 @@ struct LandscapeCalculatorView: View {
             // Text display
             HStack {
               Spacer()
-              Text(viewModel.value)
+              Text(viewModel.valueLeft)
                 .bold()
                 .font(.system(size: 40))
                 .foregroundColor(.white)
@@ -41,9 +39,9 @@ struct LandscapeCalculatorView: View {
             ForEach(buttons, id: \.self) { row in
               HStack {
                 ForEach(row, id: \.self) { item in
-                  Button(action: {
-                    didTap(button: item)
-                  }, label: {
+                  Button {
+                    viewModel.didTapLeft(button: item)
+                  } label: {
                     Text(item.rawValue)
                       .font(.system(size: 20))
                       .frame(
@@ -52,11 +50,50 @@ struct LandscapeCalculatorView: View {
                       .background(item.buttonColor)
                       .foregroundColor(.white)
                       .cornerRadius(10)
-                  })
+                  }
                 }
               }
             }
           }
+        }
+        VStack {
+          Spacer()
+          Button {
+
+          } label: {
+            Image(systemName: "arrowshape.left.fill")
+              .foregroundColor(.white)
+              .frame(width: buttonWidth(item: .add), height: buttonHeight())
+              .background {
+                RoundedRectangle(cornerRadius: 10)
+                  .fill(.green)
+              }
+
+          }
+          Button {
+
+          } label: {
+            Image(systemName: "arrowshape.right.fill")
+              .foregroundColor(.white)
+              .frame(width: buttonWidth(item: .add), height: buttonHeight())
+              .background {
+                RoundedRectangle(cornerRadius: 10)
+                  .fill(.green)
+              }
+          }
+          Spacer()
+          Button {
+
+          } label: {
+            Text("DEL")
+              .foregroundColor(.white)
+              .frame(width: buttonWidth(item: .add), height: buttonHeight())
+              .background {
+                RoundedRectangle(cornerRadius: 10)
+                  .fill(CalcButton.clear.buttonColor)
+              }
+          }
+
         }
         ZStack {
           Color.black.edgesIgnoringSafeArea(.all)
@@ -66,7 +103,7 @@ struct LandscapeCalculatorView: View {
             // Text display
             HStack {
               Spacer()
-              Text(viewModel.value2)
+              Text(viewModel.valueRight)
                 .bold()
                 .font(.system(size: 40))
                 .foregroundColor(.white)
@@ -77,9 +114,9 @@ struct LandscapeCalculatorView: View {
             ForEach(buttons, id: \.self) { row in
               HStack {
                 ForEach(row, id: \.self) { item in
-                  Button(action: {
-                    didTap(button: item)
-                  }, label: {
+                  Button {
+                    viewModel.didTapRight(button: item)
+                  } label: {
                     Text(item.rawValue)
                       .font(.system(size: 20))
                       .frame(
@@ -88,7 +125,7 @@ struct LandscapeCalculatorView: View {
                       .background(item.buttonColor)
                       .foregroundColor(.white)
                       .cornerRadius(10)
-                  })
+                  }
                 }
               }
             }
@@ -98,57 +135,14 @@ struct LandscapeCalculatorView: View {
     }
   }
 
-  func didTap(button: CalcButton) {
-    switch button {
-    case .add, .subtract, .multiply, .divide:
-      viewModel.runningNumber = Double(viewModel.value) ?? 0.0
-      viewModel.value = "0"
-      if button == .add {
-        currentOperation = .add
-      } else if button == .subtract {
-        currentOperation = .subtract
-      } else if button == .multiply {
-        currentOperation = .multiply
-      } else if button == .divide {
-        currentOperation = .divide
-      }
-    case .equal:
-      switchCurrentOperation()
-    case .clear:
-      viewModel.value = "0"
-    case .decimal, .negative, .percent:
-      break
-    default:
-      let number = button.rawValue
-      if viewModel.value == "0" {
-        viewModel.value = number
-      } else {
-        viewModel.value = "\(viewModel.value)\(number)"
-      }
-    }
-  }
-
-  func switchCurrentOperation() {
-    let runningValue = viewModel.runningNumber
-    let currentValue = Double(viewModel.value) ?? 0
-    switch currentOperation {
-    case .add: viewModel.value = "\(runningValue + currentValue)"
-    case .subtract: viewModel.value = "\(runningValue - currentValue)"
-    case .multiply: viewModel.value = "\(runningValue * currentValue)"
-    case .divide: viewModel.value = "\(runningValue / currentValue)"
-    case .none:
-      break
-    }
-  }
-
-  func buttonWidth(item: CalcButton) -> CGFloat {
+  private func buttonWidth(item: CalcButton) -> CGFloat {
     if item == .zero {
       return ((UIScreen.main.bounds.height / 2 - (5 * 5)) / 2.5 + 5) * 2
     }
     return (UIScreen.main.bounds.height / 2 - (5 * 5)) / 2.5
   }
 
-  func buttonHeight() -> CGFloat {
+  private func buttonHeight() -> CGFloat {
     (UIScreen.main.bounds.width / 2 - (6 * 5)) / 5 * 0.55
   }
 }
@@ -157,7 +151,7 @@ struct LandscapeCalculatorView: View {
 
 struct LandscapeCalculatorView_Previews: PreviewProvider {
   static var previews: some View {
-    LandscapeCalculatorView(viewModel: ViewModel(), currentOperation: .none, currentOperation2: .none, buttons: [
+    LandscapeCalculatorView(viewModel: ViewModel(), buttons: [
       [.clear, .negative, .percent, .divide],
       [.seven, .eight, .nine, .multiply],
       [.four, .five, .six, .subtract],

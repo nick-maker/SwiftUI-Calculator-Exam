@@ -30,12 +30,9 @@ struct ContentView: View {
         switch rawOrientation {
         case 3, 4:
           LandscapeCalculatorView(viewModel: viewModel,
-                                  currentOperation: .none,
-                                  currentOperation2: .none,
                                   buttons: buttons)
         default:
           PortraitCalculatorView(viewModel: viewModel,
-                                 currentOperation: .none,
                                  buttons: buttons)
         }
       }
