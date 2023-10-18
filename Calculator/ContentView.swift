@@ -23,6 +23,8 @@ struct ContentView: View {
     [.zero, .decimal, .equal]
   ]
 
+  let invalidOrientations: Set<Int> = [2, 5, 6]
+
   var body: some View {
     ZStack {
       Color.black.edgesIgnoringSafeArea(.all)
@@ -38,9 +40,11 @@ struct ContentView: View {
       }
       .onReceive(
         NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
-          if UIDevice.current.orientation.rawValue != 2 {
+          print(UIDevice.current.orientation.rawValue)
+          if !invalidOrientations.contains(UIDevice.current.orientation.rawValue) {
             rawOrientation = UIDevice.current.orientation.rawValue
           }
+          print("real\(rawOrientation)")
         }
     }
   }

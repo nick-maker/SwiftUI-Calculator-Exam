@@ -48,5 +48,5 @@ enum CalcButton: String {
 // MARK: - Operation
 
 enum Operation {
-  case add, subtract, multiply, divide, none
+  case add, subtract, multiply, divide, none, equal
 }
